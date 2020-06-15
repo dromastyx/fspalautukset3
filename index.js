@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 require('dotenv').config()
 const express = require('express')
 const app = express()
@@ -9,18 +10,17 @@ app.use(express.json())
 app.use(cors())
 app.use(express.static('build'))
 app.use(
-    morgan(function (tokens, req, res) {
-        const postData = tokens.method(req, res) == 'POST' ? 
-        JSON.stringify(req.body) : ''
-        return [
-          tokens.method(req, res),
-          tokens.url(req, res),
-          tokens.status(req, res),
-          tokens.res(req, res, 'content-length'), '-',
-          tokens['response-time'](req, res), 'ms',
-          postData
-        ].join(' ')
-      })
+  morgan(function (tokens, req, res) {
+    const postData = tokens.method(req, res) === 'POST' ? JSON.stringify(req.body) : ''
+    return [
+      tokens.method(req, res),
+      tokens.url(req, res),
+      tokens.status(req, res),
+      tokens.res(req, res, 'content-length'), '-',
+      tokens['response-time'](req, res), 'ms',
+      postData
+    ].join(' ')
+  })
 )
 
 app.get('/api/persons', (request, response) => {
@@ -30,30 +30,30 @@ app.get('/api/persons', (request, response) => {
 })
 
 app.get('/api/persons/:id', (request, response, next) => {
-    Person.findById(request.params.id).then(person => {
-      if (person) {
-        response.json(person)
-      } else {
-        response.status(404).end()
-      }
-    })
-    .catch(error => next(error))
+  Person.findById(request.params.id).then(person => {
+    if (person) {
+      response.json(person)
+    } else {
+      response.status(404).end()
+    }
   })
+    .catch(error => next(error))
+})
 
 app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndDelete(request.params.id)
-  .then(result =>{
-    response.status(204).end()
-  })
-  .catch(error => next(error))
+    .then(() => {
+      response.status(204).end()
+    })
+    .catch(error => next(error))
 })
 
 app.post('/api/persons', (request, response, next) => {
   const body = request.body
   if (!body.name || !body.number) {
     const missing = !body.name ? 'Name' : 'Number'
-    return response.status(400).json({ 
-        error: `${missing} is missing`
+    return response.status(400).json({
+      error: `${missing} is missing`
     })
   }
   const person = new Person({
@@ -63,7 +63,7 @@ app.post('/api/persons', (request, response, next) => {
   person.save().then(savedPerson => {
     response.json(savedPerson)
   })
-  .catch(error => next(error))
+    .catch(error => next(error))
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
@@ -87,7 +87,6 @@ app.get('/info', (req, res) => {
        <p>${new Date()}</p>`
     )
   })
-
 })
 
 const unknownEndpoint = (request, response) => {
